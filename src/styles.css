@@ -1,3 +1,256 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 
+  ========================================================================
+  THEME COLOR CONFIGURATION (MAIN COLORS REFERENCE & CHEAT SHEET)
+  ========================================================================
+  To customize the color theme, you only need to change the main color codes below.
+  All colors are organized in shades from 50 (lightest) to 950 (darkest).
+  
+  HOW SHADES WORK IN THE APPLICATION:
+  - 50 - 100  : Tint colors (subtle background glows, hover tints in light mode)
+  - 200 - 300 : Soft borders, muted borders, placeholder texts, disabled inputs
+  - 400 - 500 : Default icons, secondary texts, main brand colors for dark theme
+  - 600 - 700 : MAIN ACTIONS & BUTTONS in light theme, active hover/focus states
+  - 800 - 900 : Panel backgrounds, borders, card fills in dark theme
+  - 950       : Deepest canvas backgrounds (app body bg in dark theme)
+
+  MAIN COLOR ROLES:
+  - INDIGO (Primary Brand Accent) -> Default theme is Indigo. Change hex to swap primary color.
+  - VIOLET (Secondary Accent/Badges) -> Used for gradients and ownership markers.
+  - SLATE  (Neutral Layouts & Canvas) -> Used for backgrounds, text, and structure.
+  - EMERALD(Success Metrics) -> For completed tasks, high-efficiency rates.
+  - AMBER  (Warnings & Alerts) -> For in-progress lanes, dates due today.
+  - RED    (Danger / Errors) -> For high priority tags, validation errors.
+  ========================================================================
+*/
+:root {
+  /* --- INDIGO: Primary brand color used for buttons, active links, focus rings --- */
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1; /* [MAIN COLOR] Primary brand color for dark mode UI */
+  --indigo-600: #4f46e5; /* [MAIN COLOR] Primary brand color for light mode UI */
+  --indigo-700: #4338ca;
+  --indigo-800: #3730a3;
+  --indigo-900: #312e81;
+  --indigo-950: #1e1b4b;
+
+  /* --- VIOLET: Secondary highlights, badges, progress bar gradients --- */
+  --violet-50: #f5f3ff;
+  --violet-100: #ede9fe;
+  --violet-200: #ddd6fe;
+  --violet-300: #c4b5fd;
+  --violet-400: #a78bfa;
+  --violet-500: #8b5cf6; /* [MAIN COLOR] Secondary highlight for dark mode */
+  --violet-600: #7c3aed; /* [MAIN COLOR] Secondary highlight for light mode */
+  --violet-700: #6d28d9;
+  --violet-800: #5b21b6;
+  --violet-900: #4c1d95;
+  --violet-950: #2e1065;
+
+  /* --- SLATE: Canvas base neutrals for text, layouts, cards and borders --- */
+  --slate-50: #f8fafc;   /* [MAIN COLOR] Layout background in light mode */
+  --slate-100: #f1f5f9;  /* [MAIN COLOR] Secondary panel/card bg in light mode */
+  --slate-200: #e2e8f0;  /* Standard light mode border */
+  --slate-300: #cbd5e1;  /* Muted lines and inactive states */
+  --slate-400: #94a3b8;  /* Subtitles and auxiliary text */
+  --slate-500: #64748b;  /* Standard secondary body text */
+  --slate-600: #475569;  /* Heavy muted text */
+  --slate-700: #334155;  /* Heavy body text in light mode */
+  --slate-800: #1e293b;  /* [MAIN COLOR] Card backgrounds and panels in dark mode */
+  --slate-900: #0f172a;  /* [MAIN COLOR] Sidebar & modal backgrounds in dark mode */
+  --slate-950: #020617;  /* [MAIN COLOR] Full body background in dark mode */
+
+  /* --- EMERALD: Success tags, completed tasks, efficiency indicators --- */
+  --emerald-50: #ecfdf5;
+  --emerald-100: #d1fae5;
+  --emerald-200: #a7f3d0;
+  --emerald-300: #6ee7b7;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981; /* [MAIN COLOR] Success color standard */
+  --emerald-600: #059669;
+  --emerald-700: #047857;
+  --emerald-800: #065f46;
+  --emerald-900: #064e3b;
+  --emerald-950: #022c22;
+
+  /* --- AMBER: In-Progress lane badges, upcoming alerts, dates due today --- */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-200: #fde68a;
+  --amber-300: #fcd34d;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b; /* [MAIN COLOR] Warning color standard */
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --amber-800: #92400e;
+  --amber-900: #78350f;
+  --amber-950: #451a03;
+
+  /* --- RED: High-priority tasks, form error messages, overdue alert tags --- */
+  --red-50: #fef2f2;
+  --red-100: #fee2e2;
+  --red-200: #fecaca;
+  --red-300: #fca5a5;
+  --red-400: #f87171;
+  --red-500: #ef4444; /* [MAIN COLOR] Error/Danger color standard */
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --red-800: #991b1b;
+  --red-900: #7f1d1d;
+  --red-950: #450a0a;
+}
+
+/* Fix native dropdown select border cuts on Windows platforms */
+select {
+  background-clip: padding-box !important;
+  line-height: normal !important;
+}
+
+/* Custom premium styles for progress bar animations & sweeps */
+.progress-bar-animated {
+  position: relative;
+  overflow: hidden;
+}
+.progress-bar-animated::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer-effect 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes shimmer-effect {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@theme {
+  /* Custom animations and keyframes */
+  --animate-slideRight: slideRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fadeIn: fadeIn 0.15s ease-out forwards;
+  --animate-scaleIn: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes slideRight {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* 
+    Mapping Tailwind utility classes to CSS variables.
+    This allows classes like bg-indigo-500, border-slate-200, etc. 
+    to dynamically pick up changes from the :root variables defined above.
+  */
+  --color-indigo-50: var(--indigo-50);
+  --color-indigo-100: var(--indigo-100);
+  --color-indigo-200: var(--indigo-200);
+  --color-indigo-300: var(--indigo-300);
+  --color-indigo-400: var(--indigo-400);
+  --color-indigo-500: var(--indigo-500);
+  --color-indigo-600: var(--indigo-600);
+  --color-indigo-700: var(--indigo-700);
+  --color-indigo-800: var(--indigo-800);
+  --color-indigo-900: var(--indigo-900);
+  --color-indigo-950: var(--indigo-950);
+
+  --color-violet-50: var(--violet-50);
+  --color-violet-100: var(--violet-100);
+  --color-violet-200: var(--violet-200);
+  --color-violet-300: var(--violet-300);
+  --color-violet-400: var(--violet-400);
+  --color-violet-500: var(--violet-500);
+  --color-violet-600: var(--violet-600);
+  --color-violet-700: var(--violet-700);
+  --color-violet-800: var(--violet-800);
+  --color-violet-900: var(--violet-900);
+  --color-violet-950: var(--violet-950);
+
+  --color-slate-50: var(--slate-50);
+  --color-slate-100: var(--slate-100);
+  --color-slate-200: var(--slate-200);
+  --color-slate-300: var(--slate-300);
+  --color-slate-400: var(--slate-400);
+  --color-slate-500: var(--slate-500);
+  --color-slate-600: var(--slate-600);
+  --color-slate-700: var(--slate-700);
+  --color-slate-800: var(--slate-800);
+  --color-slate-900: var(--slate-900);
+  --color-slate-950: var(--slate-950);
+
+  --color-emerald-50: var(--emerald-50);
+  --color-emerald-100: var(--emerald-100);
+  --color-emerald-200: var(--emerald-200);
+  --color-emerald-300: var(--emerald-300);
+  --color-emerald-400: var(--emerald-400);
+  --color-emerald-500: var(--emerald-500);
+  --color-emerald-600: var(--emerald-600);
+  --color-emerald-700: var(--emerald-700);
+  --color-emerald-800: var(--emerald-800);
+  --color-emerald-900: var(--emerald-900);
+  --color-emerald-950: var(--emerald-950);
+
+  --color-amber-50: var(--amber-50);
+  --color-amber-100: var(--amber-100);
+  --color-amber-200: var(--amber-200);
+  --color-amber-300: var(--amber-300);
+  --color-amber-400: var(--amber-400);
+  --color-amber-500: var(--amber-500);
+  --color-amber-600: var(--amber-600);
+  --color-amber-700: var(--amber-700);
+  --color-amber-800: var(--amber-800);
+  --color-amber-900: var(--amber-900);
+  --color-amber-950: var(--amber-950);
+
+  --color-red-50: var(--red-50);
+  --color-red-100: var(--red-100);
+  --color-red-200: var(--red-200);
+  --color-red-300: var(--red-300);
+  --color-red-400: var(--red-400);
+  --color-red-500: var(--red-500);
+  --color-red-600: var(--red-600);
+  --color-red-700: var(--red-700);
+  --color-red-800: var(--red-800);
+  --color-red-900: var(--red-900);
+  --color-red-950: var(--red-950);
+}

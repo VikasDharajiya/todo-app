@@ -1,0 +1,185 @@
+<app-modal title="Assign Workspace Task" subtitle="Create a new task and delegate it to your team members." (close)="close.emit()">
+  <!-- Red Validation Error Banner -->
+  @if (taskError()) {
+    <div class="p-3 mb-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 rounded-xl text-xs font-semibold">
+      {{ taskError() }}
+    </div>
+  }
+
+  <!-- Task Creation Form -->
+  <form [formGroup]="taskForm" (ngSubmit)="handleAddTask()" class="flex flex-col gap-4">
+    
+    <!-- Task Title input -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Task Title <span class="text-red-500 font-bold">*</span></label>
+      <input
+        type="text"
+        formControlName="title"
+        placeholder="e.g. Design Landing Page Hero Section"
+        [class.border-red-500]="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+      />
+      @if (taskForm.get('title')?.invalid && taskForm.get('title')?.touched) {
+        <span class="text-[13px] font-semibold text-red-600 dark:text-red-400 mt-1.5 flex items-center gap-1.5 animate-fadeIn">
+          <svg class="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          Title is required (min 3 characters).
+        </span>
+      }
+    </div>
+
+    <!-- Segmented Priority Selector -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Priority Level</label>
+      <div class="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
+        <button
+          type="button"
+          (click)="setPriority('low')"
+          class="py-2 rounded-lg text-xs font-bold transition-all cursor-pointer text-center"
+          [class.bg-emerald-500]="taskForm.get('priority')?.value === 'low'"
+          [class.text-white]="taskForm.get('priority')?.value === 'low'"
+          [class.text-slate-500]="taskForm.get('priority')?.value !== 'low'"
+          [class.dark:text-slate-400]="taskForm.get('priority')?.value !== 'low'"
+        >
+          Low
+        </button>
+        <button
+          type="button"
+          (click)="setPriority('medium')"
+          class="py-2 rounded-lg text-xs font-bold transition-all cursor-pointer text-center"
+          [class.bg-amber-500]="taskForm.get('priority')?.value === 'medium'"
+          [class.text-white]="taskForm.get('priority')?.value === 'medium'"
+          [class.text-slate-500]="taskForm.get('priority')?.value !== 'medium'"
+          [class.dark:text-slate-400]="taskForm.get('priority')?.value !== 'medium'"
+        >
+          Medium
+        </button>
+        <button
+          type="button"
+          (click)="setPriority('high')"
+          class="py-2 rounded-lg text-xs font-bold transition-all cursor-pointer text-center"
+          [class.bg-red-500]="taskForm.get('priority')?.value === 'high'"
+          [class.text-white]="taskForm.get('priority')?.value === 'high'"
+          [class.text-slate-500]="taskForm.get('priority')?.value !== 'high'"
+          [class.dark:text-slate-400]="taskForm.get('priority')?.value !== 'high'"
+        >
+          High
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      
+      <!-- Primary Owner Assignee -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Primary Assignee <span class="text-red-500 font-bold">*</span></label>
+        <div class="relative">
+          <select
+            formControlName="assigneeId"
+            class="w-full appearance-none pl-3.5 pr-9 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+          >
+            <option value="">Select Assignee...</option>
+            @for (member of memberProfiles; track member.id) {
+              <option [value]="member.id">
+                {{ member.username || member.email.split('@')[0] }}
+              </option>
+            }
+          </select>
+          <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-slate-500 dark:text-slate-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+        @if (taskForm.get('assigneeId')?.invalid && taskForm.get('assigneeId')?.touched) {
+          <span class="text-[13px] font-semibold text-red-600 dark:text-red-400 mt-1.5 flex items-center gap-1.5 animate-fadeIn">
+            <svg class="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Please select an owner.
+          </span>
+        }
+      </div>
+
+      <!-- Collaborators Checkbox Checklist -->
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Teammate Collaborators</label>
+        <div class="w-full h-24 overflow-y-auto px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col gap-1.5">
+          @for (member of memberProfiles; track member.id) {
+            @if (taskForm.get('assigneeId')?.value !== member.id) {
+              <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  [checked]="selectedParticipatorIds().includes(member.id)"
+                  (change)="toggleParticipator(member.id)"
+                  class="rounded text-indigo-600 border-slate-300 dark:border-slate-800 focus:ring-indigo-500 h-4 w-4 cursor-pointer"
+                />
+                <span class="truncate">{{ member.username || member.email.split('@')[0] }}</span>
+              </label>
+            }
+          }
+          @if (memberProfiles.length === 0) {
+            <span class="text-[10px] text-slate-400 italic my-auto text-center">No teammates found.</span>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Task Due Date input -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Due Date (Optional)</label>
+      <input
+        type="date"
+        formControlName="dueDate"
+        [min]="minDate"
+        [class.border-red-500]="taskForm.get('dueDate')?.invalid && taskForm.get('dueDate')?.touched"
+        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer"
+      />
+      @if (taskForm.get('dueDate')?.invalid && taskForm.get('dueDate')?.touched) {
+        @if (taskForm.get('dueDate')?.errors?.['pastDate']) {
+          <span class="text-[13px] font-semibold text-red-600 dark:text-red-400 mt-1.5 flex items-center gap-1.5 animate-fadeIn">
+            <svg class="w-3.5 h-3.5 shrink-0 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Due date cannot be in the past.
+          </span>
+        }
+      }
+    </div>
+
+    <!-- Task Details / Description -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">Task Details / Description (Optional)</label>
+      <textarea
+        formControlName="description"
+        placeholder="Add detailed instructions, links, or context for the assignee..."
+        rows="3"
+        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none"
+      ></textarea>
+    </div>
+
+    <!-- Action Buttons footer -->
+    <div class="flex gap-3 pt-3 border-t border-slate-200 dark:border-slate-800/80">
+      <button
+        type="button"
+        (click)="close.emit()"
+        class="flex-1 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/60 border border-slate-200 dark:border-slate-800 rounded-xl transition-all cursor-pointer text-center"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        [disabled]="taskForm.invalid || isLoading()"
+        class="flex-1 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-all shadow-md cursor-pointer text-center flex items-center justify-center gap-2"
+      >
+        @if (isLoading()) {
+          <app-spinner size="sm" color="text-white"></app-spinner>
+        }
+        <span>{{ isLoading() ? 'Assigning...' : 'Assign Task' }}</span>
+      </button>
+    </div>
+
+  </form>
+</app-modal>

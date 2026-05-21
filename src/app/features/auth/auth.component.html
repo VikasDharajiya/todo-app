@@ -1,0 +1,136 @@
+<div class="min-h-screen w-full flex items-center justify-center p-4">
+  <div class="w-full max-w-md flex flex-col gap-5">
+
+  <!-- Outer Auth Card -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl shadow-slate-200/40 dark:shadow-black/40 overflow-hidden">
+    
+    <!-- Top Auth Header and Appearance switch -->
+    <div class="px-6 pt-6 pb-4 flex justify-between items-center border-b border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/60">
+      <div>
+        <h2 class="text-sm font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">Workspace Access</h2>
+      </div>
+
+      <!-- Clean Top-Right Theme Toggle in login page header -->
+      <button
+        (click)="toggleTheme()"
+        class="p-2 rounded-xl bg-white dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 shadow-sm transition-all cursor-pointer"
+        [title]="isDarkMode() ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+      >
+        @if (isDarkMode()) {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+          </svg>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        }
+      </button>
+    </div>
+
+    <!-- TABS ROW: Login vs Sign Up (hidden in forgot-password or reset-password mode) -->
+    @if (activeAuthTab() !== 'forgot-password' && activeAuthTab() !== 'reset-password') {
+      <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20">
+        <button
+          (click)="setTab('login')"
+          class="flex-1 py-3 text-xs font-bold transition-all cursor-pointer"
+          [class.border-b-2]="activeAuthTab() === 'login'"
+          [class.border-indigo-500]="activeAuthTab() === 'login'"
+          [class.text-indigo-600]="activeAuthTab() === 'login'"
+          [class.dark:text-indigo-400]="activeAuthTab() === 'login'"
+          [class.text-slate-400]="activeAuthTab() !== 'login'"
+          [class.dark:text-slate-500]="activeAuthTab() !== 'login'"
+          [class.bg-white]="activeAuthTab() === 'login'"
+          [class.dark:bg-slate-900]="activeAuthTab() === 'login'"
+        >
+          Sign In
+        </button>
+        <button
+          (click)="setTab('signup')"
+          class="flex-1 py-3 text-xs font-bold transition-all cursor-pointer"
+          [class.border-b-2]="activeAuthTab() === 'signup'"
+          [class.border-indigo-500]="activeAuthTab() === 'signup'"
+          [class.text-indigo-600]="activeAuthTab() === 'signup'"
+          [class.dark:text-indigo-400]="activeAuthTab() === 'signup'"
+          [class.text-slate-400]="activeAuthTab() !== 'signup'"
+          [class.dark:text-slate-500]="activeAuthTab() !== 'signup'"
+          [class.bg-white]="activeAuthTab() === 'signup'"
+          [class.dark:bg-slate-900]="activeAuthTab() === 'signup'"
+        >
+          Register Account
+        </button>
+      </div>
+    }
+
+    <!-- Header title for password recovery mode -->
+    @if (activeAuthTab() === 'forgot-password') {
+      <div class="px-6 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 text-center text-xs font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">
+        Recover Password
+      </div>
+    }
+
+    <!-- Header title for password reset mode -->
+    @if (activeAuthTab() === 'reset-password') {
+      <div class="px-6 py-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20 text-center text-xs font-extrabold text-slate-800 dark:text-white uppercase tracking-wider">
+        Reset Password
+      </div>
+    }
+
+    <!-- MAIN BODY FORM PANE -->
+    <div class="p-6 flex flex-col gap-5">
+      
+      <!-- Error Message Banner -->
+      @if (authErrorMsg()) {
+        <div class="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 rounded-xl text-xs font-semibold flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <span class="leading-tight">{{ authErrorMsg() }}</span>
+        </div>
+      }
+
+      <!-- TAB 1: LOGIN FORM -->
+      @if (activeAuthTab() === 'login') {
+        <app-login-form
+          [initialEmail]="registeredEmail()"
+          (errorOccurred)="onErrorOccurred($event)"
+          (forgotPassword)="setTab('forgot-password')"
+        ></app-login-form>
+      }
+
+      <!-- TAB 2: SIGN UP FORM -->
+      @if (activeAuthTab() === 'signup') {
+        <app-signup-form
+          (errorOccurred)="onErrorOccurred($event)"
+          (signUpSuccess)="onSignUpSuccess($event)"
+        ></app-signup-form>
+      }
+
+      <!-- TAB 3: FORGOT PASSWORD FORM -->
+      @if (activeAuthTab() === 'forgot-password') {
+        <app-forgot-password-form
+          (errorOccurred)="onErrorOccurred($event)"
+          (backToLogin)="setTab('login')"
+        ></app-forgot-password-form>
+      }
+
+      <!-- TAB 4: RESET PASSWORD FORM -->
+      @if (activeAuthTab() === 'reset-password') {
+        <app-reset-password-form
+          (errorOccurred)="onErrorOccurred($event)"
+          (resetSuccess)="onResetSuccess()"
+        ></app-reset-password-form>
+      }
+
+    </div>
+
+  </div>
+
+  <!-- Helpful notice at the bottom -->
+  <div class="bg-indigo-500/5 border border-indigo-200/20 dark:border-indigo-500/10 p-3.5 rounded-2xl">
+    <p class="text-[10px] text-indigo-700 dark:text-indigo-400 leading-normal text-center font-semibold">
+      Admins register and create a team workspace. Members register by entering the admin's copyable <strong>Organization Join Code</strong>.
+    </p>
+  </div>
+
+</div>

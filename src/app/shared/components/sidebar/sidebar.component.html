@@ -1,0 +1,215 @@
+<!-- Mobile Drawer Backdrop Overlay -->
+@if (isMobileOpen) {
+  <div class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs md:hidden" (click)="closeMobile.emit()"></div>
+  
+  <aside class="fixed top-0 bottom-0 left-0 z-50 w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between shadow-2xl md:hidden animate-slideRight">
+    
+    <!-- Mobile Close Drawer Button inside Header -->
+    <div class="flex flex-col gap-6 p-5">
+      <!-- Logo & Workspace Title -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl shadow-md shadow-indigo-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white truncate max-w-[120px]">
+              {{ organization?.name || 'Workspace' }}
+            </h2>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Task Management</p>
+          </div>
+        </div>
+
+        <button (click)="closeMobile.emit()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 rounded-lg cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+      <!-- Navigation Links -->
+      <nav class="flex flex-col gap-1.5">
+        <a
+          routerLink="/board"
+          routerLinkActive="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:translate-x-1 cursor-pointer text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Workspace Board
+        </a>
+
+        <a
+          routerLink="/members"
+          routerLinkActive="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:translate-x-1 cursor-pointer text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Team Members
+        </a>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 flex flex-col gap-3.5 border-t border-slate-200 dark:border-slate-800">
+      <!-- Clickable User Profile Badge (Mobile) -->
+      <div
+        (click)="openEditProfile()"
+        class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 transition-all cursor-pointer shadow-sm hover:shadow-md select-none"
+        title="Edit profile & avatar"
+      >
+        @if (currentUserProfile?.avatar_url) {
+          <img
+            [src]="currentUserProfile.avatar_url"
+            alt="Avatar"
+            class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+          />
+        } @else {
+          <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-extrabold text-xs flex items-center justify-center border border-white dark:border-slate-800 shadow-md shrink-0">
+            {{ currentUserProfile?.username?.[0] || currentUserProfile?.email?.[0] | uppercase }}
+          </div>
+        }
+        <div class="text-left min-w-0 flex-1">
+          <p class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate">
+            {{ currentUserProfile?.username || currentUserProfile?.email?.split('@')?.[0] }}
+          </p>
+          <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold tracking-wide">
+            {{ currentUserProfile?.role === 'admin' ? 'Admin' : 'Member' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+      <!-- Log Out Button -->
+      <button
+        (click)="logout.emit()"
+        class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-50 hover:bg-red-50 dark:bg-slate-900 dark:hover:bg-red-950/20 text-slate-700 hover:text-red-600 dark:text-slate-300 dark:hover:text-red-400 border border-slate-200 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-950/50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+}
+
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col justify-between shrink-0 shadow-sm hidden md:flex h-screen sticky top-0">
+  
+  <!-- Sidebar Content -->
+  <div class="flex flex-col gap-6 p-5">
+    <!-- Logo & Workspace Title -->
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl shadow-md shadow-indigo-500/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white truncate max-w-[150px]">
+          {{ organization?.name || 'Workspace' }}
+        </h2>
+        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Task Management</p>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+    <!-- Navigation Links -->
+    <nav class="flex flex-col gap-1.5">
+      <!-- Workspace Board -->
+      <a
+        routerLink="/board"
+        routerLinkActive="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:translate-x-1 cursor-pointer text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Workspace Board
+      </a>
+
+      <!-- Team Members -->
+      <a
+        routerLink="/members"
+        routerLinkActive="bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold"
+        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:translate-x-1 cursor-pointer text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        Team Members
+      </a>
+    </nav>
+  </div>
+
+  <!-- Sidebar Footer -->
+  <div class="p-4 flex flex-col gap-3.5 border-t border-slate-200 dark:border-slate-800">
+    
+    <!-- Clickable User Profile Badge (Desktop) -->
+    <div
+      (click)="openEditProfile()"
+      class="flex items-center gap-3 pl-2 pr-3 py-1.5 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 transition-all cursor-pointer shadow-sm hover:shadow-md select-none"
+      title="Edit profile & avatar"
+    >
+      @if (currentUserProfile?.avatar_url) {
+        <img
+          [src]="currentUserProfile.avatar_url"
+          alt="Avatar"
+          class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
+        />
+      } @else {
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-extrabold text-xs flex items-center justify-center border border-white dark:border-slate-800 shadow-md shrink-0">
+          {{ currentUserProfile?.username?.[0] || currentUserProfile?.email?.[0] | uppercase }}
+        </div>
+      }
+      <div class="text-left min-w-0 flex-1">
+        <p class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight truncate">
+          {{ currentUserProfile?.username || currentUserProfile?.email?.split('@')?.[0] }}
+        </p>
+        <span class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold tracking-wide">
+          {{ currentUserProfile?.role === 'admin' ? 'Admin' : 'Member' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+    <!-- Log Out Button (At Bottom) -->
+    <button
+      (click)="logout.emit()"
+      class="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-slate-50 hover:bg-red-50 dark:bg-slate-900 dark:hover:bg-red-950/20 text-slate-700 hover:text-red-600 dark:text-slate-300 dark:hover:text-red-400 border border-slate-200 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-950/50 rounded-xl text-xs font-bold transition-all cursor-pointer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      Log Out
+    </button>
+
+  </div>
+
+</aside>
+
+<!-- EDIT PROFILE DIALOG MODAL -->
+@if (showProfileModal()) {
+  <app-profile-modal
+    [currentUser]="currentUser"
+    [currentUserProfile]="currentUserProfile"
+    (close)="closeProfileModal()"
+    (profileUpdated)="profileUpdated.emit()"
+  ></app-profile-modal>
+}

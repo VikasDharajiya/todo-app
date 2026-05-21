@@ -1,0 +1,96 @@
+<div class="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col gap-6 bg-slate-50 dark:bg-slate-950/60">
+  
+  <div class="flex flex-col gap-1">
+    <h3 class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Workspace Team Directory</h3>
+    <p class="text-[11px] text-slate-500 dark:text-slate-400">View and manage workspace administrator and member profiles.</p>
+  </div>
+
+  <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+  <!-- ADMIN OR OWNER SECTION -->
+  <div class="flex flex-col gap-3">
+    <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Workspace Owner & Admin</h4>
+    
+    @if (adminProfile()) {
+      <div
+        (click)="selectMember(adminProfile())"
+        class="max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 p-4 rounded-2xl flex items-center gap-4 shadow-sm cursor-pointer hover:shadow-md hover:scale-[1.01] transition-all select-none"
+      >
+        @if (adminProfile()?.avatar_url) {
+          <img
+            [src]="adminProfile()?.avatar_url"
+            alt="Admin Avatar"
+            class="w-11 h-11 rounded-full object-cover border border-slate-200 dark:border-slate-800 shadow-sm"
+          />
+        } @else {
+          <div class="w-11 h-11 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-black text-sm flex items-center justify-center border border-white dark:border-slate-800 shadow-md">
+            {{ adminProfile()?.username?.[0] || adminProfile()?.email?.[0] | uppercase }}
+          </div>
+        }
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-bold text-slate-800 dark:text-white truncate">
+            {{ adminProfile()?.username || adminProfile()?.email?.split('@')?.[0] }}
+          </p>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{{ adminProfile()?.email }}</p>
+        </div>
+        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-500/25">Owner</span>
+      </div>
+    } @else {
+      <p class="text-xs text-slate-400 italic">No admin profile found.</p>
+    }
+  </div>
+
+  <!-- COLLABORATING MEMBERS LIST -->
+  <div class="flex flex-col gap-3">
+    <h4 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Active Teammates ({{ memberProfiles().length }})</h4>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (member of memberProfiles(); track member.id) {
+        <div
+          (click)="selectMember(member)"
+          class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 p-4 rounded-2xl flex items-center gap-3.5 shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200 cursor-pointer select-none"
+        >
+          <!-- Avatar picture -->
+          @if (member.avatar_url) {
+            <img
+              [src]="member.avatar_url"
+              alt="Member Avatar"
+              class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-800 shadow-sm"
+            />
+          } @else {
+            <div class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-extrabold text-xs flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-sm">
+              {{ member.username?.[0] || member.email?.[0] | uppercase }}
+            </div>
+          }
+          <!-- User info -->
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+              {{ member.username || member.email.split('@')[0] }}
+            </p>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{{ member.email }}</p>
+          </div>
+          <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/25">Member</span>
+        </div>
+      } @empty {
+        <div class="col-span-full py-10 bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center text-center p-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span class="text-xs font-bold text-slate-500 dark:text-slate-400">No Collaborators Joined Yet</span>
+          <span class="text-[10px] text-slate-400 mt-1">Copy and share the organization join code from the top header to invite members!</span>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
+
+<!-- MEMBER DETAILS DETAIL ANALYTICS MODAL OVERLAY -->
+@if (selectedMember()) {
+  <app-member-detail
+    [member]="selectedMember()"
+    [tasks]="selectedMemberTasks()"
+    [stats]="selectedMemberStats()"
+    (close)="closeDetails()"
+  ></app-member-detail>
+}

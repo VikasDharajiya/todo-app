@@ -1,0 +1,79 @@
+<div class="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col gap-6 bg-slate-50 dark:bg-slate-950/60">
+  
+  <!-- DASHBOARD ACTIONS HEADER -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Workspace Summary</h2>
+      <p class="text-[10px] text-slate-500 mt-0.5">Track your organization milestones and task execution pipelines.</p>
+    </div>
+
+    <!-- Admin Assign Task Dialog Button -->
+    @if (currentUserProfile()?.role === 'admin') {
+      <button
+        (click)="showCreateModal.set(true)"
+        class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 text-white font-bold rounded-xl transition-all shadow-md hover:shadow-indigo-500/10 active:scale-[0.98] cursor-pointer text-xs flex items-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+        </svg>
+        Assign Task
+      </button>
+    }
+  </div>
+
+  <!-- STATS HEADER COUNTERS -->
+  <app-task-stats
+    [completionRate]="completionRate()"
+    [completedTasks]="completedTasks()"
+    [totalTasks]="totalTasks()"
+  ></app-task-stats>
+
+  <!-- KANBAN COLUMNS LANE BOARD -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 items-start">
+    
+    <!-- LANE 1: TO DO -->
+    <app-task-lane
+      title="To Do"
+      [tasks]="todoLane()"
+      badgeColorClass="bg-slate-400"
+      countColorClass="text-slate-500 bg-slate-200/60 dark:bg-slate-800"
+      [currentUserProfile]="currentUserProfile()"
+      (updateStatus)="handleUpdateStatus($event.todoId, $event.status)"
+      (deleteTodo)="handleDeleteTodo($event)"
+    ></app-task-lane>
+
+    <!-- LANE 2: IN PROGRESS -->
+    <app-task-lane
+      title="In Progress"
+      [tasks]="inProgressLane()"
+      badgeColorClass="bg-amber-400"
+      countColorClass="text-amber-600 bg-amber-100/60 dark:bg-amber-500/10"
+      [currentUserProfile]="currentUserProfile()"
+      (updateStatus)="handleUpdateStatus($event.todoId, $event.status)"
+      (deleteTodo)="handleDeleteTodo($event)"
+    ></app-task-lane>
+
+    <!-- LANE 3: COMPLETED -->
+    <app-task-lane
+      title="Completed"
+      [tasks]="completedLane()"
+      badgeColorClass="bg-emerald-400"
+      countColorClass="text-emerald-600 bg-emerald-100/60 dark:bg-emerald-500/10"
+      [currentUserProfile]="currentUserProfile()"
+      (updateStatus)="handleUpdateStatus($event.todoId, $event.status)"
+      (deleteTodo)="handleDeleteTodo($event)"
+    ></app-task-lane>
+
+  </div>
+
+</div>
+
+<!-- TASK CREATOR OVERLAY MODAL -->
+@if (showCreateModal()) {
+  <app-task-creator
+    [organization]="organization()"
+    [memberProfiles]="memberProfiles()"
+    (taskCreated)="workspaceService.loadTodos()"
+    (close)="showCreateModal.set(false)"
+  ></app-task-creator>
+}

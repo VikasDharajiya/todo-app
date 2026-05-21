@@ -1,0 +1,143 @@
+<app-modal 
+  [title]="member.role === 'admin' ? 'Admin Overview & Metrics' : 'Teammate Performance Profile'" 
+  (close)="close.emit()"
+>
+  <div class="flex flex-col gap-5">
+    <!-- Top Profile Info -->
+    <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-900/40 p-4 border border-slate-100 dark:border-slate-800 rounded-2xl">
+      @if (member.avatar_url) {
+        <img [src]="member.avatar_url" alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-slate-200 dark:border-slate-700 shadow-sm" />
+      } @else {
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white font-black text-sm flex items-center justify-center border border-white dark:border-slate-800 shadow-md">
+          {{ member.username?.[0] || member.email?.[0] | uppercase }}
+        </div>
+      }
+      <div class="flex-1 min-w-0">
+        <h4 class="text-xs font-black text-slate-800 dark:text-white truncate">
+          {{ member.username || member.email?.split('@')?.[0] }}
+        </h4>
+        <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">{{ member.email }}</p>
+      </div>
+      <span
+        class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase border"
+        [class]="member.role === 'admin' 
+          ? 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-500/20' 
+          : 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20'"
+      >
+        {{ member.role }}
+      </span>
+    </div>
+
+    <!-- Performance Summary Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- Total Tasks -->
+      <div class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 p-3 rounded-2xl flex flex-col items-center">
+        <span class="text-[8px] font-extrabold text-slate-400 uppercase tracking-wider">
+          {{ member.role === 'admin' ? 'Delegated' : 'Assigned' }}
+        </span>
+        <span class="text-sm font-black text-slate-800 dark:text-white mt-1">{{ stats.total }}</span>
+      </div>
+
+      <!-- Completed -->
+      <div class="bg-emerald-50/20 dark:bg-emerald-500/5 border border-emerald-100 dark:border-emerald-950 p-3 rounded-2xl flex flex-col items-center">
+        <span class="text-[8px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Completed</span>
+        <span class="text-sm font-black text-emerald-600 dark:text-emerald-400 mt-1">{{ stats.completed }}</span>
+      </div>
+
+      <!-- In Progress -->
+      <div class="bg-amber-50/20 dark:bg-amber-500/5 border border-amber-100 dark:border-amber-950 p-3 rounded-2xl flex flex-col items-center">
+        <span class="text-[8px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Progressing</span>
+        <span class="text-sm font-black text-amber-600 dark:text-amber-400 mt-1">{{ stats.inProgress }}</span>
+      </div>
+
+      <!-- Completion Rate -->
+      <div class="bg-indigo-50/20 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-950 p-3 rounded-2xl flex flex-col items-center">
+        <span class="text-[8px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Rate</span>
+        <span class="text-sm font-black text-indigo-600 dark:text-indigo-400 mt-1">{{ stats.rate }}%</span>
+      </div>
+    </div>
+
+    <!-- Task Completion Efficiency Progress bar -->
+    <div class="flex flex-col gap-2">
+      <div class="flex justify-between items-center text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">
+        <span>{{ member.role === 'admin' ? 'Delegated Task Success Rate' : 'Overall Completion Efficiency' }}</span>
+        <span>{{ stats.rate }}%</span>
+      </div>
+      <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+        <div
+          class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full transition-all duration-500 progress-bar-animated"
+          [style.width.%]="stats.rate"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="h-px bg-slate-200 dark:bg-slate-800"></div>
+
+    <!-- Task Assignment List -->
+    <div class="flex flex-col gap-3">
+      <h5 class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">
+        {{ member.role === 'admin' ? 'Delegated Task Details' : 'Task Allocation Details' }}
+      </h5>
+      
+      <div class="flex flex-col gap-2.5 max-h-[220px] overflow-y-auto pr-1">
+        @for (todo of tasks; track todo.id) {
+          <div class="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex flex-col gap-1 min-w-0">
+              <span class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate leading-snug">{{ todo.task }}</span>
+              @if (todo.description) {
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 break-words line-clamp-2" [title]="todo.description">
+                  {{ todo.description }}
+                </p>
+              }
+              <div class="flex items-center gap-2 flex-wrap">
+                <!-- Priority -->
+                <span class="text-[8px] font-extrabold uppercase tracking-wide">
+                  @if (todo.priority === 'high') {
+                    <span class="text-red-500 bg-red-50 dark:bg-red-500/10 px-1 py-0.5 rounded border border-red-200/50 dark:border-red-500/20">High</span>
+                  } @else if (todo.priority === 'medium') {
+                    <span class="text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-1 py-0.5 rounded border border-amber-200/50 dark:border-amber-500/20">Medium</span>
+                  } @else if (todo.priority === 'low') {
+                    <span class="text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-1 py-0.5 rounded border border-emerald-200/50 dark:border-emerald-500/20">Low</span>
+                  }
+                </span>
+                <span class="text-[8px] text-slate-400">•</span>
+                <!-- Assignee Name or Role Badge -->
+                <span class="text-[8px] font-extrabold uppercase text-slate-500 dark:text-slate-400 tracking-wide">
+                  @if (member.role === 'admin') {
+                    Assigned to: {{ todo.profiles?.username || todo.profiles?.email?.split('@')?.[0] || 'Unassigned' }}
+                  } @else {
+                    {{ todo.user_id === member.id ? 'Assignee' : 'Collaborator' }}
+                  }
+                </span>
+                @if (todo.due_date) {
+                  <span class="text-[8px] text-slate-400">•</span>
+                  <span class="px-1.5 py-0.5 rounded text-[8px] font-extrabold leading-none shrink-0" [ngClass]="getDueDateClass(todo.due_date, todo.status)">
+                    Due: {{ todo.due_date | date:'shortDate' }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="shrink-0">
+              @if (todo.status === 'completed') {
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">Completed</span>
+              } @else if (todo.status === 'in_progress') {
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">In Progress</span>
+              } @else if (todo.status === 'not_started') {
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800">To Do</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (tasks.length === 0) {
+          <p class="text-[10px] text-slate-400 italic text-center py-6">
+            {{ member.role === 'admin' ? 'No tasks delegated by this administrator.' : 'No tasks assigned to this teammate.' }}
+          </p>
+        }
+      </div>
+    </div>
+  </div>
+</app-modal>

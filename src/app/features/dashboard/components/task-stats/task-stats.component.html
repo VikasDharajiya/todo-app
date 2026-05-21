@@ -1,0 +1,42 @@
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+  <!-- Stat 1: Completion Progress -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-2 shadow-sm">
+    <div class="flex justify-between items-center">
+      <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Completion Rate</span>
+      <span class="text-sm font-black text-indigo-600 dark:text-indigo-400">{{ completionRate }}%</span>
+    </div>
+    <!-- Progress Bar -->
+    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+      <div
+        class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full transition-all duration-500 progress-bar-animated"
+        [style.width.%]="completionRate"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Stat 2: Completed Tasks -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+    <div>
+      <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Tasks Completed</span>
+      <span class="text-lg font-black text-slate-800 dark:text-white mt-1 block">{{ completedTasks }}</span>
+    </div>
+    <div class="p-3 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Stat 3: Total Backlog -->
+  <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between shadow-sm">
+    <div>
+      <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Workload</span>
+      <span class="text-lg font-black text-slate-800 dark:text-white mt-1 block">{{ totalTasks }}</span>
+    </div>
+    <div class="p-3 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+    </div>
+  </div>
+</div>
