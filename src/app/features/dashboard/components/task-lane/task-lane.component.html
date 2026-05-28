@@ -7,7 +7,7 @@
     <span class="px-2 py-0.5 text-[10px] font-bold rounded-full" [ngClass]="countColorClass">{{ tasks.length }}</span>
   </div>
 
-  <div class="flex flex-col gap-3 overflow-y-auto max-h-[500px] pr-1.5">
+  <div class="flex flex-col gap-3 overflow-y-auto custom-scrollbar max-h-[500px] pr-1.5">
     @for (todo of tasks; track todo.id) {
       <app-task-card
         [todo]="todo"

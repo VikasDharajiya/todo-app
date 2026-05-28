@@ -37,6 +37,15 @@ export class ResetPasswordFormComponent {
     return password === confirmPassword ? null : { mismatch: true };
   }
 
+  formatAuthError(message: string): string {
+    if (!message) return '';
+    const lower = message.toLowerCase();
+    if (lower.includes('rate limit') || lower.includes('too many requests')) {
+      return 'For security reasons, you can only request this once every 60 seconds. Please wait a minute and try again.';
+    }
+    return message;
+  }
+
   // Handle password update
   async handleResetPassword() {
     if (this.resetForm.invalid) {
@@ -55,8 +64,9 @@ export class ResetPasswordFormComponent {
 
       this.ngZone.run(() => {
         if (error) {
-          this.errorOccurred.emit(error.message);
-          this.toastService.show('Failed to update password: ' + error.message, 'error');
+          const formatted = this.formatAuthError(error.message);
+          this.errorOccurred.emit(formatted);
+          this.toastService.show('Failed to update password: ' + formatted, 'error');
         } else {
           this.toastService.show('Password updated successfully! Redirecting...', 'success');
           this.resetSuccess.emit();

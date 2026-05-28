@@ -32,6 +32,21 @@ export class LoginFormComponent {
     }
   }
 
+  formatAuthError(message: string): string {
+    if (!message) return '';
+    const lower = message.toLowerCase();
+    if (lower.includes('rate limit') || lower.includes('too many requests')) {
+      return 'For security reasons, you can only request this once every 60 seconds. Please wait a minute and try again.';
+    }
+    if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) {
+      return 'Invalid email or password. Please verify your credentials and try again.';
+    }
+    if (lower.includes('email not confirmed')) {
+      return 'Your email address is not yet confirmed. Please verify it using the code sent to your email.';
+    }
+    return message;
+  }
+
   async handleLogin() {
     if (this.loginForm.invalid) {
       this.errorOccurred.emit('Please provide a valid email and password.');
@@ -47,8 +62,9 @@ export class LoginFormComponent {
 
       this.ngZone.run(() => {
         if (error) {
-          this.errorOccurred.emit(error.message);
-          this.toastService.show('Failed to log in: ' + error.message, 'error');
+          const formatted = this.formatAuthError(error.message);
+          this.errorOccurred.emit(formatted);
+          this.toastService.show('Failed to log in: ' + formatted, 'error');
         } else {
           this.toastService.show('Logged in successfully!', 'success');
         }

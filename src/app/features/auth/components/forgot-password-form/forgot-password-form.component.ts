@@ -31,6 +31,18 @@ export class ForgotPasswordFormComponent {
     email: ['', [Validators.required, Validators.email]],
   });
 
+  formatAuthError(message: string): string {
+    if (!message) return '';
+    const lower = message.toLowerCase();
+    if (lower.includes('rate limit') || lower.includes('too many requests')) {
+      return 'For security reasons, you can only request this once every 60 seconds. Please wait a minute and try again.';
+    }
+    if (lower.includes('user not found')) {
+      return 'No account was found with this email address.';
+    }
+    return message;
+  }
+
   // Submits the email address to Supabase to trigger a password reset email
   async handleForgotPassword() {
     if (this.forgotPasswordForm.invalid) {
@@ -49,8 +61,9 @@ export class ForgotPasswordFormComponent {
 
       this.ngZone.run(() => {
         if (error) {
-          this.errorOccurred.emit(error.message);
-          this.toastService.show('Reset failed: ' + error.message, 'error');
+          const formatted = this.formatAuthError(error.message);
+          this.errorOccurred.emit(formatted);
+          this.toastService.show('Reset failed: ' + formatted, 'error');
         } else {
           this.isEmailSent.set(true);
           this.toastService.show('Password reset email sent!', 'success');

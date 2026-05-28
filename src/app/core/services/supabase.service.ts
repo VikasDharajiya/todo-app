@@ -61,6 +61,28 @@ export class SupabaseService {
     return response;
   }
 
+  // 3.7. Verify OTP Token (used for email validation with 6-digit code)
+  async verifyOtp(email: string, token: string, type: 'signup' | 'recovery' | 'email' = 'signup') {
+    const response = await this.supabase.auth.verifyOtp({
+      email: email,
+      token: token,
+      type: type,
+    });
+    return response;
+  }
+
+  // 3.8. Resend OTP verification email
+  async resendOtp(email: string, type: 'signup' | 'email_change' = 'signup') {
+    const response = await this.supabase.auth.resend({
+      type: type,
+      email: email,
+      options: {
+        emailRedirectTo: window.location.origin + '/auth',
+      }
+    });
+    return response;
+  }
+
   // 4. Get the currently logged-in user
   async getCurrentUser() {
     const { data } = await this.supabase.auth.getUser();
